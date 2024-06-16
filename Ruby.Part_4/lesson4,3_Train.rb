@@ -1,26 +1,22 @@
 class Train
-  attr_reader :number, :vagon, :type, :cargo_train, :pass_train
-  attr_accessor :speed, :type
-  protected
+  attr_reader :number, :vagon, :type, :cargo_train, :pass_train, :all_vagons
+  attr_accessor :speed, :type, :current_station
   attr_writer :number, :vagon
-  def initialize (number, type, speed = 0, current_station = "не назначен")
+  def initialize (number, speed = 0, current_station = "не назначен")
     @speed = speed
     @number = number
     @type = type
     @cargo_train = []
     @pass_train = []
+    @all_vagons = {}
+    @current_station = current_station
   end
-  public
   def add_vagon (vagon)
-    if self.type == "cargo"
-      if vagon.type == self.type
-        @cargo_train.push (vagon.name)
-      end
+    if self.type == "cargo" && vagon.type == self.type
+      @cargo_train.push (vagon.name)      
     end
-    if self.type == "pass"
-      if vagon.type == self.type
-        @pass_train.push (vagon.name)
-      end
+    if self.type == "pass" && vagon.type == self.type
+      @pass_train.push (vagon.name)
     end 
   end
   #Может набирать скорость

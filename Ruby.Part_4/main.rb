@@ -12,6 +12,7 @@ class Main
     @trains = {}
     @routes = {}
     @i = 0
+    @all_vagons = {}
   end
 
   def start
@@ -37,7 +38,7 @@ class Main
       when 4
         train_add_route
       when 5
-        add_vagon
+        add_type_vagon
       when 6
         delete_vagon
       when 7
@@ -63,7 +64,8 @@ class Main
     number = gets.chomp.to_i
     puts "Укажите тип поезда(грузовой или пассажирский)"
     type = gets.chomp.to_s
-    train1 = Train.new(number, type)
+    train1 = CargoTrain.new(number) if type == "cargo"
+    train1 = PassTrain.new(number) if type == "pass"
     @trains[number] = train1
   end
 
@@ -91,16 +93,49 @@ class Main
 
   def train_add_route #4
     puts "Введите номер поезда"
-    train1 = gets.chomp
-    #----------
+    train1 = gets.chomp.to_i
+
     puts "Введите маршрут из списка"
     puts "Список маршрутов:"
     @routes.each do |key, value|
       puts "#{key} - #{value}"
     end
-    #------------
-    route1 = gets.chomp
+
+    route1 = gets.chomp.to_i
     @trains[train1].add_direction(@routes[route1])
+    #показать какой поезд и на какой станции 
+    puts "Поезд #{train1} помещен на станцию #{@trains[train1].current_station}"
+  end
+
+  def add_type_vagon #5
+    #определить какомму поезду добавить вагон
+    #показать список вагонов у поезда
+    puts "Выберите поезд"
+    @trains.each do |key, value|
+      puts "#{key} - #{value.type}"
+    end
+    puts "Введите номер поезда"
+    number_of_train = gets.chomp.to_i
+    #добавить новый вагон
+    puts "Теперь введите номер нового вагона"
+    number_of_vagon = gets.chomp.to_i
+    #проверка вагона в списке
+    if @all_vagons.include? (number_of_vagon)
+      if @all_vagons[number_of_vagon].type == trains[number_of_train].type
+        #добавить вагон
+        @trains[number_of_train].add_vagon(vagon1)
+      else
+        puts "Вагон уже создан и не соответствует типу поезда"
+      end
+    else
+      vagon1 = CargoVagon.new(number_of_vagon) if @trains[number_of_train].type == "cargo"
+      vagon1 = PassVagon.new(number_of_vagon) if @trains[number_of_train].type == "pass"
+      @all_vagons[number_of_vagon] = vagon1
+      @trains[number_of_train].add_vagon(vagon1)
+    end 
+    #показать обновленный список вагонов у поезда
+    puts "Поезд #{number_of_train} состоит из вагонов #{@trains[number_of_train].cargo_train}" if @trains[number_of_train].type == "cargo"
+    puts "Поезд #{number_of_train} состоит из вагонов #{@trains[number_of_train].pass_train}" if @trains[number_of_train].type == "pass"
   end
 
   def show_list #8
