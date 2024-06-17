@@ -123,7 +123,7 @@ class Main
     if @all_vagons.include? (number_of_vagon)
       if @all_vagons[number_of_vagon].type == trains[number_of_train].type
         #добавить вагон
-        @trains[number_of_train].add_vagon(vagon1)
+        @trains[number_of_train].add_vagon(@all_vagons[number_of_vagon])
       else
         puts "Вагон уже создан и не соответствует типу поезда"
       end
@@ -133,6 +133,35 @@ class Main
       @all_vagons[number_of_vagon] = vagon1
       @trains[number_of_train].add_vagon(vagon1)
     end 
+    #показать обновленный список вагонов у поезда
+    puts "Поезд #{number_of_train} состоит из вагонов #{@trains[number_of_train].cargo_train}" if @trains[number_of_train].type == "cargo"
+    puts "Поезд #{number_of_train} состоит из вагонов #{@trains[number_of_train].pass_train}" if @trains[number_of_train].type == "pass"
+  end
+
+  def delete_vagon #6
+    puts "Выберите поезд для удаления вагона"
+    @trains.each do |key, value|
+      puts "#{key} - #{value.type}"
+    end
+    puts "Введите номер поезда"
+    number_of_train = gets.chomp.to_i
+
+    puts "Выберите вагон"
+    if @trains[number_of_train].type == "cargo"
+    @trains[number_of_train].cargo_train.each do |numbers|
+      puts "#{numbers}"
+    end
+    end
+    if @trains[number_of_train].type == "pass"
+    @trains[number_of_train].pass_train.each do |numbers|
+      puts "#{numbers}"
+    end
+    end
+    puts "Введите номер вагона который хотите удалить"
+    number_of_vagon = gets.chomp.to_i
+
+    @trains[number_of_train].delete_vagon(number_of_vagon)
+
     #показать обновленный список вагонов у поезда
     puts "Поезд #{number_of_train} состоит из вагонов #{@trains[number_of_train].cargo_train}" if @trains[number_of_train].type == "cargo"
     puts "Поезд #{number_of_train} состоит из вагонов #{@trains[number_of_train].pass_train}" if @trains[number_of_train].type == "pass"

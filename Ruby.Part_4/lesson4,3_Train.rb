@@ -1,5 +1,5 @@
 class Train
-  attr_reader :number, :vagon, :type, :cargo_train, :pass_train, :all_vagons
+  attr_reader :number, :vagon, :cargo_train, :pass_train, :all_vagons
   attr_accessor :speed, :type, :current_station
   attr_writer :number, :vagon
   def initialize (number, speed = 0, current_station = "не назначен")
@@ -8,7 +8,6 @@ class Train
     @type = type
     @cargo_train = []
     @pass_train = []
-    @all_vagons = {}
     @current_station = current_station
   end
   def add_vagon (vagon)
@@ -19,6 +18,13 @@ class Train
       @pass_train.push (vagon.name)
     end 
   end
+
+  def delete_vagon (vagon)
+    @cargo_train.delete (vagon) 
+    @pass_train.delete (vagon)
+  end 
+
+
   #Может набирать скорость
 #  def razgon (speed)
 #    @speed = speed
