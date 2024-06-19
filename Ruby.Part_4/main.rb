@@ -13,6 +13,7 @@ class Main
     @routes = {}
     @i = 0
     @all_vagons = {}
+
   end
 
   def start
@@ -237,16 +238,18 @@ class Main
   end
 
   def show_list #8
+    list_of_station = []
     puts "Список станций:"
     puts "#{@stations}"
-    puts "Список поездов:"
-    @trains.each do |key, value| 
-      puts "#{key}"
+
+    puts "Введите станцию для просмотра поездов:"
+    look_station = gets.chomp.to_s
+    @trains.each do |key, value|
+      if look_station == value.current_station
+        list_of_station << key
+      end
     end
-    puts "Список маршрутов:"
-    @routes.each do |key, value|
-      puts "#{key} - #{value.route}"
-    end
+    puts "На станции #{look_station} поезда: #{list_of_station}"
   end
 
 
