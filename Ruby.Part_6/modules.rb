@@ -15,6 +15,12 @@ module InstanceCounter
       @instances ||= 0
       @instances += 1
     end
+
+    def valid?
+      validate!
+      rescue
+        false
+    end
   end
 
   module InstanceMethods
