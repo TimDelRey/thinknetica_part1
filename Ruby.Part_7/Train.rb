@@ -22,6 +22,7 @@ class Train
     @speed = speed
     @number = number
     @type = type
+    @all_vagons = []
     @cargo_train = {}
     @pass_train = {}
     @current_station = current_station
@@ -45,10 +46,12 @@ class Train
 
   def add_vagon (vagon)
     if self.type == "cargo" && vagon.type == self.type
-      @cargo_train[vagon.name] = vagon   
+      @cargo_train[vagon.name] = vagon  
+      @all_vagons << vagon 
     end
     if self.type == "pass" && vagon.type == self.type
       @pass_train[vagon.name] = vagon
+      @all_vagons << vagon
     end 
   end
 
@@ -92,19 +95,27 @@ class Train
   #Перемещение возможно вперед и назад, но только на 1 станцию 
   #за раз. 
   def change_station (change)
-    @current_station = @direction.route[+1] if change == "+1"
-    # @current_station = @direction.route[@direction.route.index(@current_station).to_i+1] if change == "+1"
-    @current_station = @direction.route[@direction.route.index(@current_station).to_i-1] if change == "-1"
+    @position_now = @direction.route.index(@current_station)
+    if change == "+1"
+      @current_station = @direction.route[@position_now.to_i+1] 
+      @direction.route[@position_now].train_on_station.delete(self.number)
+      @direction.route[@position_now.to_i+1].train_on_station[self.number] = self
+    end
+    if change == "-1"
+      @current_station = @direction.route[@position_now.to_i-1] 
+      @direction.route[@position_now].train_on_station.delete(self.number)
+      @direction.route[@position_now.to_i-1].train_on_station[self.number] = self
+    end
+    show_station
   end
   #Возвращать предыдущую станцию, текущую, следующую, на основе маршрута
   def show_station
-    puts "Предыдущая станция: #{@direction.route[@direction.route.index(@current_station).to_i-1]}"
-    puts "Текущая станция: #{@current_station}"
-    puts "Следующая станция: #{@direction.route[@direction.route.index(@current_station).to_i+1]}"
+    puts "Предыдущая станция: #{@direction.route[@position_now.to_i-1].title}" unless @direction.route[@position_now.to_i+1].nil?
+    puts "Текущая станция: #{@current_station.title}"
+    puts "Следующая станция: #{@direction.route[@position_now.to_i+1].title}" unless @direction.route[@position_now.to_i+1].nil?
   end
 
   def each_vagon (&block)
-    @cargo_train.each(&block) 
-    @pass_train.each(&block)
+    @all_vagons.each(&block) 
   end
 end

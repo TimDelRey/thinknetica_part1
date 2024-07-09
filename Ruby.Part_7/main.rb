@@ -1,10 +1,12 @@
-#cd Desktop/RoR/work/thinknetica_part1/Ruby.Part_6
-require_relative 'lesson4,1_Station'
-require_relative 'lesson4,2_Route'
-require_relative 'lesson4,3_Train'
+#cd Desktop/RoR/work/thinknetica_part1/Ruby.Part_7
+require_relative 'Station'
+require_relative 'Route'
+require_relative 'Train'
 require_relative 'CargoPass_Type'
 require_relative 'CargoPass_vagon'
 
+# все станции теперь отображатся обьектами, а нужны их title 
+# неплохо бы квитирующие фразы связать с новыми элементами массивов и хэшей
 
 class Main
 
@@ -148,7 +150,7 @@ class Main
   def edit_route #3.2
     puts "Выберите маршрут"
     @routes.each do |key, value|
-      puts "#{key} - #{value.route}"
+      puts "#{key} - #{value.route[0].title} - #{value.route[-1].title}"
     end
     edit_route = gets.chomp.to_i
 
@@ -182,14 +184,14 @@ class Main
     puts "Введите маршрут из списка"
     puts "Список маршрутов:"
     @routes.each do |key, value|
-      puts "#{key} - #{value.route}"
+      puts "#{key} - #{value.route[0].title} - #{value.route[-1].title}"  # в routs теперь сидят обьекты станций, нужно вывести их title
     end
 
     route1 = gets.chomp.to_i
     proverka_nalichia(@routes, route1) #проверка
     @trains[train_number].add_direction(@routes[route1])
     #показать какой поезд и на какой станции 
-    puts "Поезд #{train_number} помещен на станцию #{@trains[train_number].current_station}"
+    puts "Поезд #{train_number} помещен на станцию #{@trains[train_number].current_station.title}"
   end
 
   def add_type_vagon #5
@@ -282,13 +284,13 @@ class Main
 
 
     #показать поезд на текущей станции
-    puts "Поезд #{train_number} перемещен на станцию #{@trains[train_number].current_station}"
+    puts "Поезд #{train_number} перемещен на станцию #{@trains[train_number].current_station.title}"
   end
 
   def show_list #8
     list_of_station = []
     puts "Список станций:"
-    puts "#{@stations}"
+    puts "#{Station.all.keys}"
 
     puts "Введите станцию для просмотра поездов:"
     look_station = gets.chomp.to_s
@@ -297,7 +299,7 @@ class Main
       puts "На станции нет поездов"
       else
         @trains.each do |key, value|
-          if look_station == value.current_station
+          if look_station == value.current_station.title
             list_of_station << key
           end 
           puts "На станции #{look_station} поезда: #{list_of_station}"

@@ -1,6 +1,6 @@
 require_relative 'modules'
 # require_relative 'main'
-require_relative 'lesson4,1_Station'
+require_relative 'Station'
 
 class Route
 
@@ -11,8 +11,8 @@ class Route
     @start = start
     @finish = finish
     @route = [0,0]
-    @route [0] = Station.all(start)
-    @route [-1] = Station.all(finish)
+    @route [0] = Station.find(start)
+    @route [-1] = Station.find(finish)
     register_instance
     # validate!
   end
@@ -31,7 +31,7 @@ class Route
   # end
 
   def add_station (station)
-    @route.insert(-2, station)
+    @route.insert(-2, Station.find(station))
   end
 
   def del_station (station)
@@ -40,6 +40,6 @@ class Route
 
   def show_route
     puts "Станции на маршруте:"
-    @route.each {|station| puts station}
+    @route.keys
   end
 end
