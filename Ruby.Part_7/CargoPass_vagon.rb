@@ -6,8 +6,8 @@ class CargoVagon
   def initialize (name, all_volume, type = "cargo", take_volume = 0)
     @name = name
     @type = type
-    @all_volume = all_volume
-    @take_volume = take_volume
+    @all_volume = all_volume.to_i
+    @take_volume = take_volume.to_i
     @free_volume = @all_volume
   end
 
@@ -30,8 +30,8 @@ class PassVagon
   def initialize (name, all_seats, type = "pass", take_seats = 0)
     @name = name
     @type = type
-    @all_seats = all_seats
-    @take_seats = take_seats
+    @all_seats = all_seats.to_i
+    @take_seats = take_seats.to_i
     @free_seats = @all_seats
   end
 

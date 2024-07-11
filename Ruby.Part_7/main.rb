@@ -5,19 +5,26 @@ require_relative 'Train'
 require_relative 'CargoPass_Type'
 require_relative 'CargoPass_vagon'
 
-# все станции теперь отображатся обьектами, а нужны их title 
+# ПРИМЕНЧАНИЯ 
+# Station.all.values.each do |x|; puts x.title; x.each_train {|x| puts "#{x.number}, #{x.type}, #{x.all_vagons.size}"};end  - перебирает 
+# последовательно все станции и для каждой станции выводит список поездов в формате; Номер поезда, тип, кол-во вагонов
+
+
+# Station.all.values.each do |x|;puts x.title;x.each_train {|x|;puts x.number;x.each_vagon {|x|;puts "#{x.name}, #{x.type}, #{x.free_seats}, #{x.take_seats}" if x.type == "pass";puts "#{x.name}, #{x.type}, #{x.free_volume}, #{x.take_volume}" if x.type == "cargo"}};end
+# Перебирает поезда на станции и расписывает у каждого поезда номера вагонов, тип и свободные занятые места и пространства
+
 # неплохо бы квитирующие фразы связать с новыми элементами массивов и хэшей
 
 class Main
 
-  attr_reader :stations, :trains, :routes, :stations_plus
+  attr_reader :stations, :trains, :routes, :stations_plus, :all_vagons1
   def initialize
     @stations = []
     @stations_plus = {}
     @trains = {}
     @routes = {}
     @i = 0
-    @all_vagons = {}
+    @all_vagons1 = {}
     start
     
 
@@ -31,8 +38,8 @@ class Main
         puts "2. Создание поезда"
         puts "3. Создание маршрута и управление станциями"
         puts "4. Назначение маршрута поезду"
-        puts "5. Добавление вагона поезду"
-        puts "6. Отцепление вагона от поезда"
+        puts "5. Меню вагонов"
+        # puts "6. Отцепление вагона от поезда"
         puts "7. Перемещение поезда по маршруту вперед и назад"
         puts "8. Список станций и список поездов на станции"
         puts "0. Выход"
@@ -52,15 +59,16 @@ class Main
         when 4
           otrabotka_runtimeerror {train_add_route}
         when 5
-          otrabotka_runtimeerror {add_type_vagon}
-        when 6
-          otrabotka_runtimeerror {delete_vagon}
+          otrabotka_runtimeerror {vagon_menu}
+        # when 6
+        #   otrabotka_runtimeerror {delete_vagon}
         when 7
           otrabotka_runtimeerror {move_train}
         when 8
           otrabotka_runtimeerror {show_list}
         when 0
           break
+          return puts "Data saved"
         else
           raise "Неверный формат выбора"
         end
@@ -94,7 +102,7 @@ class Main
   def create_train #2
     puts "Укажите номер поезда"
     train_number = gets.chomp.to_s
-    puts "Укажите тип поезда(1 - грузовой или 2 - пассажирский)"
+    puts "Укажите тип поезда (1 - ГРУЗОВОЙ или 2 - ПАССАЖИРСКИЙ)"
     type = gets.chomp.to_i
     train1 = CargoTrain.new(train_number) if type == 1
     train1 = PassTrain.new(train_number) if type == 2
@@ -191,10 +199,30 @@ class Main
     proverka_nalichia(@routes, route1) #проверка
     @trains[train_number].add_direction(@routes[route1])
     #показать какой поезд и на какой станции 
+    Station.all.values.each do |x|
+      puts puts "На станции #{x.title} размещены поезда:"
+      x.each_train {|x| puts "номер: #{x.number}, тип: #{x.type}, кол-во вагонов: #{x.all_vagons.size}"}
+    end
+
     puts "Поезд #{train_number} помещен на станцию #{@trains[train_number].current_station.title}"
   end
 
-  def add_type_vagon #5
+  def vagon_menu #5
+    puts "1 - Добавить вагон, 2 - ОТЦЕПИТЬ ВАГОН, 3 - ЗАНЯТЬ ВАГОН"
+    vagon_choice = gets.chomp.to_i
+    case vagon_choice
+    when 1
+      add_type_vagon
+    when 2
+      delete_vagon
+    when 3 
+      take_vagon
+    else
+      puts "Ошибка выбора"
+    end
+  end
+
+  def add_type_vagon #5.1
     #определить какомму поезду добавить вагон
     #показать список вагонов у поезда
     puts "Из списка поездов:"
@@ -208,10 +236,10 @@ class Main
     puts "Теперь введите номер нового вагона"
     number_of_vagon = gets.chomp.to_i
     #проверка вагона в списке
-    if @all_vagons.include? (number_of_vagon)
-      if @all_vagons[number_of_vagon].type == trains[train_number].type
+    if @all_vagons1.include? (number_of_vagon)
+      if @all_vagons1[number_of_vagon].type == trains[train_number].type
         #добавить вагон
-        @trains[train_number].add_vagon(@all_vagons[number_of_vagon])
+        @trains[train_number].add_vagon(@all_vagons1[number_of_vagon])
       else
         puts "Вагон уже создан и не соответствует типу поезда"
       end
@@ -226,15 +254,15 @@ class Main
         all_seats = gets.chomp #<= НАДО БОДАВИТЬ ОБРАБОТЧИК ПО ТИПУ АРГУМЕНТА И ВСТРОЕННЫМ ИСКЛЮЧЕНИЯМ
         vagon1 = PassVagon.new(number_of_vagon, all_seats)
       end
-      @all_vagons[number_of_vagon] = vagon1
+      @all_vagons1[number_of_vagon] = vagon1
       @trains[train_number].add_vagon(vagon1)
     end 
     #показать обновленный список вагонов у поезда
-    puts "Поезд #{train_number} состоит из вагонов #{@trains[train_number].cargo_train.keys}" if @trains[train_number].type == "cargo"
-    puts "Поезд #{train_number} состоит из вагонов #{@trains[train_number].pass_train.keys}" if @trains[train_number].type == "pass"
+    puts "Поезд #{train_number} состоит из вагонов:"
+    puts "#{@trains[train_number].each_vagon {|x| puts x.name}}"
   end
 
-  def delete_vagon #6
+  def delete_vagon #5.2
     puts "Выберите поезд для удаления вагона"
     @trains.each do |key, value|
       puts "#{key} - #{value.type}"
@@ -262,6 +290,32 @@ class Main
     #показать обновленный список вагонов у поезда
     puts "Поезд #{train_number} состоит из вагонов #{@trains[train_number].cargo_train.keys}" if @trains[train_number].type == "cargo"
     puts "Поезд #{train_number} состоит из вагонов #{@trains[train_number].pass_train.keys}" if @trains[train_number].type == "pass"
+  end
+
+  def take_vagon #5.3
+    puts "Выберите вагон из списка:"
+    puts "#{@all_vagons1.keys}"
+    take_vagon_choice = gets.chomp.to_i
+
+    vagon = @all_vagons1[take_vagon_choice]
+
+    # if @all_vagons1.key?(take_vagon_choice)
+   
+      if vagon.type == "cargo"
+        puts "Выберите занимаемый объем"
+        take_vagon_volume = gets.chomp.to_i
+        vagon.fill_volume(take_vagon_volume)
+        puts "Занят объем вагона #{vagon.take_volume}/#{vagon.all_volume}"
+      end
+      if vagon.type == "pass"
+        vagon.take_place
+        puts "Занят объем вагона #{vagon.take_seats}/#{vagon.all_seats}"
+      end
+    # else 
+    #   puts "vagons hash is empty"
+    #   puts "#{vagon}"
+    #   puts "#{@all_vagons1}"
+    # end
   end
 
   def move_train #7
