@@ -11,14 +11,13 @@ class Train
     @@all_trains[name]
   end
 
-  attr_reader :number, :vagon, :cargo_train, :pass_train, :all_vagons, :current_station, :speed, :direction
+  attr_reader :number, :vagon, :cargo_train, :pass_train, :all_vagons, :current_station, :speed, :direction, :position_next, :position_back
   attr_accessor :type
 
   @@all_trains = {}
   TRAIN_NUMBER_FORMAT = /[a-z0-9]{3}(-)?[a-z0-9]{2}/i.freeze
 
-  def initialize(number, speed = 0, current_station = 'не назначен')
-    @speed = speed
+  def initialize(number, current_station = 'не назначен')
     @number = number
     @type = type
     @cargo_train = {}
@@ -39,7 +38,6 @@ class Train
 
   def validate!
     raise 'Неверный формат номера!' if @number !~ TRAIN_NUMBER_FORMAT
-    raise "Скорость #{@speed} должна выражаться в цифрах" if @speed.class != Integer
 
     true
   end
@@ -54,10 +52,6 @@ class Train
     @pass_train.delete(vagon)
   end
 
-  def stop
-    @speed = 0
-  end
-
   def add_direction(direction)
     @direction = direction
     @current_station = direction.route[0]
@@ -69,7 +63,6 @@ class Train
     @current_station = @direction.route[@position_now + 1]
     @direction.route[@position_now].train_on_station.delete(number)
     @direction.route[@position_now + 1].train_on_station[number] = self
-    show_station
   end
 
   def station_back
@@ -77,17 +70,6 @@ class Train
     @current_station = @direction.route[@position_now - 1]
     @direction.route[@position_now].train_on_station.delete(number)
     @direction.route[@position_now - 1].train_on_station[number] = self
-    show_station
-  end
-
-  def show_station
-    unless @direction.route[@position_now - 1].nil?
-      puts "Предыдущая станция: #{@direction.route[@position_now - 1].title}"
-    end
-    puts "Текущая станция: #{@current_station.title}"
-    unless @direction.route[@position_now + 1].nil?
-      puts "Следующая станция: #{@direction.route[@position_now + 1].title}"
-    end
   end
 
   def each_vagon(&block)
