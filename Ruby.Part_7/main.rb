@@ -299,8 +299,7 @@ class Main
 
     vagon = @all_vagons1[take_vagon_choice]
 
-    # if @all_vagons1.key?(take_vagon_choice)
-   
+    if @all_vagons1.key?(take_vagon_choice)
       if vagon.type == "cargo"
         puts "Выберите занимаемый объем"
         take_vagon_volume = gets.chomp.to_i
@@ -311,11 +310,9 @@ class Main
         vagon.take_place
         puts "Занят объем вагона #{vagon.take_seats}/#{vagon.all_seats}"
       end
-    # else 
-    #   puts "vagons hash is empty"
-    #   puts "#{vagon}"
-    #   puts "#{@all_vagons1}"
-    # end
+    else 
+      puts "Введеный вагон не существует"
+    end
   end
 
   def move_train #7
